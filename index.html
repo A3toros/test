@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Contact Form</title></head>
+<body>
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Your name" required /><br />
+    <input type="email" name="email" placeholder="Your email" required /><br />
+    <textarea name="message" placeholder="Your message" required></textarea><br />
+    <button type="submit">Send</button>
+  </form>
+
+  <p id="response"></p>
+
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        message: form.message.value,
+      };
+
+      const res = await fetch("/.netlify/functions/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "123qwerty_"
+        },
+        body: JSON.stringify(data),
+      });
+
+      document.getElementById("response").innerText = await res.text();
+    });
+  </script>
+</body>
+</html>
