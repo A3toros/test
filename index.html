@@ -1,37 +1,91 @@
 <!DOCTYPE html>
-<html>
-<head><title>Contact Form</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Form with Messages</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, textarea { width: 100%; margin: 10px 0; padding: 8px; }
+    button { padding: 10px 15px; }
+    .message-box { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .message-box:last-child { border-bottom: none; }
+    small { color: gray; }
+  </style>
+</head>
 <body>
+  <h1>Contact Form</h1>
+
   <form id="contact-form">
-    <input type="text" name="name" placeholder="Your name" required /><br />
-    <input type="email" name="email" placeholder="Your email" required /><br />
-    <textarea name="message" placeholder="Your message" required></textarea><br />
+    <label>Name</label>
+    <input type="text" name="name" required />
+
+    <label>Email</label>
+    <input type="email" name="email" required />
+
+    <label>Message</label>
+    <textarea name="message" rows="4" required></textarea>
+
     <button type="submit">Send</button>
+    <p id="form-status"></p>
   </form>
 
-  <p id="response"></p>
+  <h2>Submitted Messages</h2>
+  <div id="messages">Loading messages...</div>
 
   <script>
-    document.getElementById("contact-form").addEventListener("submit", async (e) => {
+    const form = document.getElementById('contact-form');
+    const statusText = document.getElementById('form-status');
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = e.target;
-      const data = {
-        name: form.name.value,
-        email: form.email.value,
-        message: form.message.value,
-      };
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      statusText.textContent = "Sending...";
 
       const res = await fetch("/.netlify/functions/submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": "123qwerty_"
-        },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       });
 
-      document.getElementById("response").innerText = await res.text();
+      if (res.ok) {
+        statusText.textContent = "Message sent!";
+        form.reset();
+        loadMessages(); // refresh message list
+      } else {
+        statusText.textContent = "Error sending message.";
+      }
     });
+
+    async function loadMessages() {
+      const res = await fetch("/.netlify/functions/get-messages");
+      const messagesDiv = document.getElementById("messages");
+
+      if (!res.ok) {
+        messagesDiv.innerHTML = "<p>Failed to load messages.</p>";
+        return;
+      }
+
+      const messages = await res.json();
+
+      if (messages.length === 0) {
+        messagesDiv.innerHTML = "<p>No messages yet.</p>";
+        return;
+      }
+
+      messagesDiv.innerHTML = messages.map(msg => `
+        <div class="message-box">
+          <strong>${msg.name}</strong> (${msg.email})<br>
+          ${msg.message}<br>
+          <small>${new Date(msg.created_at).toLocaleString()}</small>
+        </div>
+      `).join('');
+    }
+
+    loadMessages();
   </script>
 </body>
 </html>
