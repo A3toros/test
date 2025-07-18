@@ -86,6 +86,14 @@
     }
 
     loadMessages();
+    const res = await fetch("/.netlify/functions/submit", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "123qwerty_"  // 🔐 Replace with the exact same value from Netlify env
+  },
+  body: JSON.stringify(data)
+});
   </script>
 </body>
 </html>
