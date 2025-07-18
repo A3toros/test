@@ -49,7 +49,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": "123qwerty_" // 🔐 Replace with your actual API key if required
+          "x-api-key": "123qwerty_"  // Replace with your actual API key
         },
         body: JSON.stringify(data)
       });
@@ -57,7 +57,7 @@
       if (res.ok) {
         statusText.textContent = "Message sent!";
         form.reset();
-        loadMessages(); // refresh message list
+        loadMessages();
       } else {
         statusText.textContent = "Error sending message.";
       }

@@ -1,11 +1,3 @@
-const res = await fetch("/.netlify/functions/submit", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "x-api-key": "123qwerty_"  // ✅ Must match process.env.API_KEY on Netlify
-  },
-  body: JSON.stringify(data)
-});
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -15,7 +7,7 @@ const pool = new Pool({
 
 const API_KEY = process.env.API_KEY;
 
-exports.handler = async function (event, context) {
+exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
