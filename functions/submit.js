@@ -1,3 +1,11 @@
+const res = await fetch("/.netlify/functions/submit", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": "123qwerty_"  // ✅ Must match process.env.API_KEY on Netlify
+  },
+  body: JSON.stringify(data)
+});
 const { Pool } = require("pg");
 
 const pool = new Pool({
